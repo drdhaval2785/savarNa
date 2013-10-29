@@ -1,13 +1,9 @@
 ﻿<?php
-// reading the variables input in the HTML.
-$letter = $_POST["letter"];
-$pratyahara = $_POST['pratyahara'];
-// Displaying the input information back to the user for confirmation.
-echo "You entered this letter: ".$letter."</br>You entered this pratyAhAra: ".$pratyahara."</br>";
+$first = $_POST["letter"];
+$second = $_POST['pratyahara'];
+echo "You entered this pratyAhAra: ".$first."</br>You want to find its savarNa in this pratyAhAra: ".$second."</br>";
 /* Defining grammatical arrays */
-// mAhezvarasUtrANi
 $shiv=array("a","i","u","-R","f","x","-k","e","o","-N","E","O","-c","h","y","v","r","-w","l","-R","Y","m","N","R","n","-m","J","B","-Y","G","Q","D","-z","j","b","g","q","d","-S","K","P","C","W","T","c","w","t","-v","k","p","-y","S","z","s","-r","h","-l");
-// Asya or sthAna
 $kantha = array("a","A","k","K","g","G","N","h","H");
 $talu = array("i","I","c","C","j","J","Y","y","S");
 $murdha = array("f","F","w","W","q","Q","R","r","z");
@@ -17,12 +13,11 @@ $nasika = array("N","Y","R","n","m","M");
 $kanthatalu = array ("e","E");
 $kanthoshtha = array("o","O");
 $dantoshtha = array("v");
-// Abhyantara prayatna
+$sparsha = array("k","K","g","G","N","c","C","j","J","Y","w","W","q","Q","R","t","T","d","D","n","p","P","b","B","m");
 $sprushta = array("k","K","g","G","N","c","C","j","J","Y","w","W","q","Q","R","t","T","d","D","n","p","P","b","B","m",);
 $ishatsprushta = array("y","r","l","v");
 $vivruta = array("S","z","s","h","a","A","i","I","u","U","f","F","x","X","e","E","o","O");
 $samvruta = array("a");
-//bAhya prayatna
 $vivara = array("k","K","c","C","w","W","t","T","p","P","H","S","z","s");
 $shvasa = array("k","K","c","C","w","W","t","T","p","P","H","S","z","s");
 $aghosha = array("k","K","c","C","w","W","t","T","p","P","H","S","z","s");
@@ -31,24 +26,15 @@ $nada = array("g","G","N","j","J","Y","q","Q","R","d","D","n","b","B","m","y","r
 $ghosha = array("g","G","N","j","J","Y","q","Q","R","d","D","n","b","B","m","y","r","l","v","h");
 $alpaprana = array("k","g","c","j","w","q","t","d","p","b","y","r","l","v");
 $mahaprana = array("K","G","C","J","W","Q","T","D","P","B","S","z","s","h");
-$udatta = array("a","A","i","I","u","U","f","F","x","X","e","o","E","O",);
-$anudatta = array("a","A","i","I","u","U","f","F","x","X","e","o","E","O",);
-$svarita = array("a","A","i","I","u","U","f","F","x","X","e","o","E","O",);
-// Other technical clusters
-$sparsha = array("k","K","g","G","N","c","C","j","J","Y","w","W","q","Q","R","t","T","d","D","n","p","P","b","B","m");
 $antastha = array("y","r","l","v");
 $ushma = array("S","z","s","h");
-// For defining the sAvarNya of these 4 in special case.
 $ru = array("f","F","x","X");
-// For defining the non sAvarNya of these 4 in special case.
-$e = array("e","E","o","O");
-// vowels
 $ac = array("a","A","i","I","u","U","f","F","x","X","e","o","E","O",);
-// consonants
 $hl = array("k","K","g","G","N","c","C","j","J","Y","w","W","q","Q","R","t","T","d","D","n","p","P","b","B","m","y","r","l","v","S","z","s","h");
-
-/* Defining functions used in the code */
-// prat - pratyAhAra. gives an array for the given input. e.g. prat('ac') will give an array of all vowels.
+$e = array("e","E","o","O");
+$dirgha = array("A","I","U","F","X","e","E","o","O");
+$hrasva = array("a","i","u","f","x");
+       
 function prat($text)  // prat for pratyAhAra
 {
 global $shiv; 
@@ -92,7 +78,6 @@ $text = explode(" ",$b);
 }
 return $text;
 }
-
 // A function to flatten a multidimentional array
 function flatten(array $array) 
 {
@@ -101,10 +86,11 @@ function flatten(array $array)
     return $return;
 }
 
-// Actual function to find out the savarNa of a character from the given pratyAhAra. e.g. savarNa("a",prat('ac')) will give 
-// savarNa of letter 'a' from the pratyAhAra 'ac'.
-function savarna($text,$array) // Known issue - words having two Asyas.
+function savarna1($inarray,$array) // Known issue - words having two Asyas.
 {
+for($z=0;$z<count($inarray);$z++)
+{
+$text = $inarray[$z];    
     global $kantha,$talu,$murdha,$danta,$oshtha,$nasika,$kanthatalu,$kanthoshtha,$dantoshtha,$sprushta,$ishatsprushta,$vivruta,$samvruta,$aghosha,$alpaprana,$ghosha,$mahaprana,$ac,$udatta,$anudatta,$svarita,$shvasa,$nada,$vivara,$samvara,$hl,$ru,$e;
     // defining an array for sthAna
 $i=0;
@@ -137,29 +123,26 @@ if (in_array($text,$ac)) { $svar[$u] = $udatta; $u++; }
 if(empty($sthana)===FALSE)
 {
 $sthanasamya = array_intersect(flatten($sthana),$array); 
-echo "The letters in the pratyAhAra with same sthAna (Asya) as the letter input are: ".implode(",",$sthanasamya)."</br>";    
+//echo "The letters in the pratyAhAra with same sthAna (Asya) as the letter input are: ".implode(",",$sthanasamya)."</br>";    
 }
 if(empty($abhyantara)===false)
 {
 $abhyantarasamya = array_intersect(flatten($abhyantara),$array);
-echo "The letters in the pratyAhAra with the same Abhyantara prayatna as the letter input are: ".implode(",",$abhyantarasamya)."</br>";    
+//echo "The letters in the pratyAhAra with the same Abhyantara prayatna as the letter input are: ".implode(",",$abhyantarasamya)."</br>";    
 }
 if(empty($ghosh)===FALSE)
 {
 $ghoshasamya = array_intersect(flatten($ghosh),$array);
-echo "The letters in the pratyAhAra with the same ghoSa as the letter input are: ".implode(",",$ghoshasamya)."</br>";    
+//echo "The letters in the pratyAhAra with the same ghoSa as the letter input are: ".implode(",",$ghoshasamya)."</br>";    
 }
 if(empty($prana)===FALSE)
 {
 $pranasamya = array_intersect(flatten($prana),$array);
-echo "The letters in the pratyAhAra with the same prANa as the letter input are: ".implode(",",$pranasamya)."</br>";    
+//echo "The letters in the pratyAhAra with the same prANa as the letter input are: ".implode(",",$pranasamya)."</br>";    
 }
 if(empty($svar)===false)
 {
-if(in_array($text,$ac)) 
-        { $svarasamya = array_intersect(flatten($svar),$array,$ac); 
-echo "The letters in the pratyAhAra with the same udAtta/anudAtta/svarita as the letter input are: ".implode(",",$svarasamya)."</br>";
-        }    
+if(in_array($text,$ac)) { $svarasamya = array_intersect(flatten($svar),$array,$ac); echo "The letters in the pratyAhAra with the same udAtta/anudAtta/svarita as the letter input are: ".implode(",",$svarasamya)."</br>";}    
 }
 
 $l = array_intersect($sthanasamya,$abhyantarasamya,$ghoshasamya,$pranasamya);
@@ -172,30 +155,30 @@ $q = array_intersect($sthanasamya,$pranasamya);
 if(in_array($text,$hl))
 {
     if(empty($sthanasamya)===false&&empty($abhyantarasamya)===false&&empty($ghoshasamya)===false&&empty($pranasamya)===FALSE&&empty($l)===false) 
-    {echo "four match";
+    {//echo "four match";
             $savarna = implode(", ",$l);     
     }
     elseif (empty($sthanasamya)===false&&empty($abhyantarasamya)===false&&empty($ghoshasamya)===false&&empty($m)===false)
-    {echo "three match";
+    {//echo "three match";
             $savarna = implode(", ",$m);     
     }
     elseif (empty($sthanasamya)===false&&empty($abhyantarasamya)===false&&empty($pranasamya)===false&&empty($o)===false)
-    {echo "three match";
+    {//echo "three match";
             $savarna = implode(", ",$o);     
     }
     elseif (empty($sthanasamya)===false&&empty($abhyantarasamya)===false&&empty($n)===false)
-    {echo "Two match";
+    {//echo "Two match";
             $savarna = implode(", ",$n);     
     }
      elseif (empty($sthanasamya)===false&&empty($ghoshasamya)===false&&empty($p)===false)
-    {echo "Two match";
+    {//echo "Two match";
             $savarna = implode(", ",$p);     
     } elseif (empty($sthanasamya)===false&&empty($pranasamya)===false&&empty($q)===false)
-    {echo "Two match";
+    {//echo "Two match";
             $savarna = implode(", ",$q);     
     }
     else
-    {echo "no match";
+    {//echo "no match";
     $savarna = implode(", ",$sthanasamya);    
     }
 } 
@@ -230,12 +213,18 @@ else
         $savarna = implode(", ",$sthanasamya);
     }
 }
+
 // giving output to the browser for savarNa letter
-echo "The savarna letter of '".$text."' among the given pratyAhAra is: ".$savarna;    
+//echo "The savarna letter of '".$text."' among the given pratyAhAra is: ";    
 // stores that savarNa letter in memory.
-return $savarna;
+$arr[$z] =  $savarna;
 }
-// actual execution part of the code
-savarna($letter,prat($pratyahara));
+return($arr);
+}
+
+for ($i=0;$i<count(prat($first));$i++)
+{
+    echo prat($first)[$i]. " - ". savarna1(prat($first),prat($second))[$i]."</br>";
+}
 
 ?>
